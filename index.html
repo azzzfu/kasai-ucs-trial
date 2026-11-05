@@ -113,7 +113,8 @@ function text(){let t='UNIFIED CHECK SHEET – TRIAL\nSafety & Environmental Mon
  t+='\nTotals: OK '+a.filter(v=>v.r=='ok').length+' | Not OK '+a.filter(v=>v.r=='bad').length+' | N/A '+a.filter(v=>v.r=='na').length+' | of '+TOTAL+' items\nPhotos attached: '+phFiles().length+'\n';
  t+='\nCompleted by: '+(S.done?S.done.name+'   Date: '+fmtD(S.done.date):'(sheet not marked complete)')+'\n';return t}
 function canFiles(){try{return !!(window.isSecureContext&&navigator.share&&navigator.canShare&&navigator.canShare({files:[new File([new Blob(['x'],{type:'image/jpeg'})],'t.jpg',{type:'image/jpeg'})]}))}catch(e){return false}}
-function updShare(){const f=canFiles();if($('share'))$('share').style.display=f?'flex':'none'}
+function canShareAny(){try{return !!(window.isSecureContext&&navigator.share)}catch(e){return false}}
+function updShare(){if($('share'))$('share').style.display=canShareAny()?'flex':'none'}
 function shortText(){const a=Object.values(S.items).filter(v=>v.r);let t='UNIFIED CHECK SHEET – TRIAL\nExported: '+new Date().toLocaleString()+'\n\nTotals: OK '+a.filter(v=>v.r=='ok').length+' | Not OK '+a.filter(v=>v.r=='bad').length+' | N/A '+a.filter(v=>v.r=='na').length+' | of '+TOTAL+' items\nPhotos: '+phFiles().length+'\n\nNOT OK ITEMS:\n';
  const bad=ALL.filter(i=>(S.items[i.id]||{}).r=='bad');if(!bad.length)t+='(none)\n';
  bad.forEach(i=>{const v=S.items[i.id];t+=i.id+' – '+i.q+'\n';if(v.sub&&v.sub.length)t+='   Needs replacing: '+v.sub.join(', ')+'\n';if(v.c&&v.c.trim())t+='   Comment: '+v.c.trim()+'\n';const pn=phNames(i.id);if(pn.length)t+='   Photos: '+pn.join(', ')+'\n'});
@@ -124,7 +125,29 @@ async function clip(t){try{await navigator.clipboard.writeText(t);return true}ca
 function email(ev){ev.preventDefault();const full=text(),m=mailBody(full),who=S.done&&S.done.name?S.done.name:'not completed',dt=S.done&&S.done.date?fmtD(S.done.date):fmtD(today());
  const nl=x=>x.replace(/\r?\n/g,'\r\n');const url='mailto:?subject='+encodeURIComponent('Unified Check Sheet – '+dt+' – '+who)+'&body='+encodeURIComponent(nl(m.body));
  const go=()=>{window.location.href=url};if(m.cut){clip(full).then(ok=>{toast(ok?'Full results copied':'Opening email');go()})}else go()}
-async function share(){try{toast('Preparing share…');const x=await makeXlsxFile();const files=[x,...phFiles()];const data={title:'Unified Check Sheet',text:shortText(),files};if(navigator.canShare&&!navigator.canShare({files})){toast('This app cannot attach files – use Download');return}await navigator.share(data)}catch(e){if(e&&e.name!='AbortError'){console.warn(e);toast('Share failed – download Excel + photos instead')}}}
+function shareOk(data){try{if(!navigator.share)return false;if(navigator.canShare)return !!navigator.canShare(data);return !data.files||!data.files.length}catch(e){return false}}
+async function tryShare(data){if(!shareOk(data))return 'skip';try{await navigator.share(data);return 'ok'}catch(e){if(e&&e.name==='AbortError')return 'abort';console.warn('share attempt failed',e&&e.name,e&&e.message,data.files&&data.files.map(f=>f.name+':'+f.type));return 'fail'}}
+async function share(){
+ if(!navigator.share){toast('Share not available – use Download filled check sheet');return}
+ let xlsx=null,photos=[];
+ try{toast('Building Excel…');xlsx=await makeXlsxFile()}catch(e){console.warn(e);toast(e&&/SheetJS|template|Missing/i.test(String(e.message||e))?'Could not load Excel template – check network, then use Download':'Could not build Excel – use Download filled check sheet');return}
+ try{photos=phFiles()}catch(e){console.warn(e);photos=[]}
+ const title='Unified Check Sheet';
+ const summary=shortText();
+ const excelNote='Filled Excel: use Download filled check sheet, then attach '+xlsxFileName()+' from Downloads.\n\n'+summary;
+ const attempts=[];
+ if(xlsx&&photos.length)attempts.push({label:'Excel + photos',data:{title,text:summary,files:[xlsx,...photos]}});
+ if(photos.length)attempts.push({label:'photos only',data:{title,text:excelNote,files:photos}});
+ if(xlsx)attempts.push({label:'Excel only',data:{title,text:summary,files:[xlsx]}});
+ attempts.push({label:'text only',data:{title,text:summary}});
+ let lastFail=false;
+ for(const a of attempts){
+  const r=await tryShare(a.data);
+  if(r==='ok'||r==='abort')return;
+  if(r==='fail')lastFail=true;
+ }
+ toast(lastFail?'Share could not attach files on this phone – tap Download filled check sheet and Download photos, then attach in Gmail':'Nothing to share – answer items first, or use Download');
+}
 async function copy(){const t=text();try{await navigator.clipboard.writeText(t);toast('Results copied')}catch(e){$('out').innerHTML='<pre id="txt">'+esc(t)+'</pre>';const r=document.createRange();r.selectNodeContents($('txt'));getSelection().removeAllRanges();getSelection().addRange(r);try{document.execCommand('copy');toast('Results copied')}catch(_){toast('Select the text and copy')}}}
 function csv(){const q=x=>'"'+String(x==null?'':x).replace(/"/g,'""')+'"';const d=S.done||{};let r=[['Section','Section name','Item','Check item','Result','Needs replacing','Comment','Photos','Completed by','Date']];
  SECS.forEach(s=>s.items.forEach(i=>{const v=S.items[i.id]||{};r.push([s.n,s.t,i.id,i.q,v.r?LBL[v.r]:'',(v.sub||[]).join('; '),v.c||'',phNames(i.id).join('; '),d.name||'',d.date||''])}));
@@ -139,7 +162,7 @@ function setCell(ws,addr,val){if(val==null||val==='')return;const s=String(val);
 async function loadTemplateBuf(){const r=await fetch('ucs_template.xlsx',{cache:'force-cache'});if(!r.ok)throw new Error('Missing ucs_template.xlsx ('+r.status+')');return await r.arrayBuffer()}
 function appendName(ws,addr,name){if(!name)return;const cur=(ws[addr]&&ws[addr].v!=null)?String(ws[addr].v):'';const base=cur.replace(/\s{2,}.*$/,'').replace(/\s*$/,'');setCell(ws,addr,base+'  '+name)}
 async function buildXlsxBlob(){if(typeof XLSX==='undefined')throw new Error('SheetJS not loaded');const buf=await loadTemplateBuf();const wb=XLSX.read(buf,{type:'array',cellFormula:true,sheetStubs:true,cellStyles:true});const sn=wb.SheetNames.find(n=>/monthly/i.test(n))||wb.SheetNames[0];const ws=wb.Sheets[sn];ALL.forEach(i=>{const row=XMAP.items[i.id];if(!row)return;const v=S.items[i.id]||{};if(v.r==='ok')setCell(ws,'C'+row,CHECK);else if(v.r==='bad')setCell(ws,'D'+row,CHECK);else if(v.r==='na')setCell(ws,'E'+row,CHECK);const obs=obsText(i.id);if(obs)setCell(ws,'F'+row,obs)});const name=((S.done&&S.done.name)||S.name||'').trim();const date=(S.done&&S.done.date)||S.date||today();const fd=fmtD(date);if(date)setCell(ws,'C5','Audit Date: '+fd);if(name)setCell(ws,'C6','Auditor: '+name);(XMAP.secDone||[]).forEach(r=>{appendName(ws,'A'+r,name);if(date)setCell(ws,'C'+r,'Date: '+fd)});if(XMAP.signNameRow)appendName(ws,'A'+XMAP.signNameRow,name);if(XMAP.signDate&&date)setCell(ws,XMAP.signDate,'Date: '+fd);const outWb={SheetNames:[sn],Sheets:{[sn]:ws}};const out=XLSX.write(outWb,{bookType:'xlsx',type:'array',cellStyles:true});return new Blob([out],{type:XLSX_MIME})}
-async function makeXlsxFile(){const blob=await buildXlsxBlob();return new File([blob],xlsxFileName(),{type:XLSX_MIME})}
+async function makeXlsxFile(){const blob=await buildXlsxBlob();const name=xlsxFileName();const typed=(blob.type===XLSX_MIME)?blob:new Blob([blob],{type:XLSX_MIME});return new File([typed],name,{type:XLSX_MIME,lastModified:Date.now()})}
 async function dlXlsx(){try{toast('Building Excel…');const blob=await buildXlsxBlob();const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=xlsxFileName();document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000);toast('Excel downloaded')}catch(e){console.warn(e);toast('Could not build Excel – check network and try again')}}
 
 /* ---- photos (IndexedDB) ---- */
@@ -154,7 +177,7 @@ async function addPhotos(id,files){for(const f of files){if((PH[id]||[]).length>
 async function delPhoto(id,k){if(!confirm('Remove this photo?'))return;await tx('readwrite',st=>st.delete(k));PH[id]=(PH[id]||[]).filter(p=>p.k!==k);S.done=null;save();prog();drawPh(id)}
 function phName(id,n){return id+'_'+n+'.jpg'}
 function phNames(id){return(PH[id]||[]).map((p,n)=>phName(id,n+1))}
-function phFiles(){const f=[];ALL.forEach(i=>(PH[i.id]||[]).forEach((p,n)=>f.push(new File([p.blob],phName(i.id,n+1),{type:'image/jpeg'}))));return f}
+function phFiles(){const f=[];ALL.forEach(i=>(PH[i.id]||[]).forEach((p,n)=>{const name=phName(i.id,n+1);const b=p.blob.type==='image/jpeg'?p.blob:new Blob([p.blob],{type:'image/jpeg'});f.push(new File([b],name,{type:'image/jpeg',lastModified:Date.now()}))}));return f}
 function drawPh(id){const el=document.querySelector(`.item[data-i="${id}"] .ph`);if(!el)return;const L=PH[id]||[];
  el.innerHTML=L.map(p=>`<div class="th"><img src="${p.url}" data-k="${p.k}" alt="photo"><button class="x" data-k="${p.k}" aria-label="Remove photo">✕</button></div>`).join('')+
  `<label class="cam ${L.length>=MAXP?'off':''}">📷 ${L.length?'Add photo':'Photo'} (${L.length}/${MAXP})<input type="file" accept="image/*" capture="environment"></label>`;
