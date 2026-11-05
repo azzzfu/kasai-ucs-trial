@@ -1,0 +1,146 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Unified Check Sheet – Trial</title>
+<style>
+:root{--bg:#eef1f4;--card:#fff;--ink:#1b2430;--muted:#5d6876;--line:#d3d9e0;--accent:#1f3a5a;--ok:#1b7f3b;--bad:#c62828;--na:#5f6b78;--okbg:#e8f5ec;--badbg:#fdecec;--warn:#b36b00;--warnbg:#fff6e0}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.4 Roboto,"Segoe UI",Arial,sans-serif;-webkit-text-size-adjust:100%}
+button,input,textarea{font:inherit;color:inherit}
+.bar{position:sticky;top:0;z-index:5;background:var(--accent);color:#fff;padding:12px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.bar h1{font-size:19px;margin:0;flex:1;line-height:1.2}.bar h1 small{display:block;font-weight:400;font-size:13px;opacity:.85}
+.back{background:#fff;color:var(--accent);border:0;border-radius:10px;min-height:48px;padding:0 14px;font-weight:700}
+main{max-width:640px;margin:0 auto;padding:10px 12px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
+.sec{display:flex;width:100%;text-align:left;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0;min-height:72px}
+.sec .num{font-weight:800;color:var(--accent);font-size:20px;min-width:30px}.sec .nm{flex:1;font-weight:700}
+.st{display:block;font-weight:400;font-size:14px;margin-top:3px}
+.st.ns{color:var(--muted)}.st.ip{color:var(--warn)}.st.cp{color:var(--ok);font-weight:700}
+.sec.cp{background:var(--okbg);border-color:#9fd1ae}
+.item{border-top:1px solid #edf0f3;padding:14px 0}.item:first-child{border-top:0;padding-top:4px}
+.q{margin-bottom:10px}.q b{color:var(--accent)}
+.note{font-size:14px;color:var(--warn);background:var(--warnbg);border-radius:8px;padding:6px 10px;margin:0 0 10px}
+.seg{display:flex;gap:8px}.seg button{flex:1;min-height:56px;border:2px solid var(--line);background:#fff;border-radius:12px;font-weight:800;font-size:17px}
+.seg .on.ok{background:var(--ok);border-color:var(--ok);color:#fff}.seg .on.bad{background:var(--bad);border-color:var(--bad);color:#fff}.seg .on.na{background:var(--na);border-color:var(--na);color:#fff}
+textarea,input[type=text],input[type=date]{width:100%;min-height:52px;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff;font-size:17px;margin-top:10px}
+textarea{min-height:70px;resize:vertical}textarea.need{border-color:var(--bad);background:#fff7f7}
+.subs{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.subs label{display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:20px;padding:8px 12px;font-size:15px;background:#fff}
+.subs input{width:22px;height:22px}
+.btn{display:flex;width:100%;align-items:center;justify-content:center;min-height:58px;border-radius:12px;border:2px solid var(--accent);background:#fff;color:var(--accent);font-weight:800;font-size:18px;margin:10px 0;text-decoration:none}
+.btn.pri{background:var(--accent);color:#fff}.btn.go{background:var(--ok);border-color:var(--ok);color:#fff}.btn.danger{border-color:var(--bad);color:var(--bad)}
+lab{display:block;font-weight:700;margin-top:12px}
+.msg{font-size:15px;color:var(--bad);min-height:20px}
+.prog{position:sticky;top:64px;z-index:4;background:var(--bg);font-size:17px;font-weight:700;color:var(--accent);padding:8px 2px;border-bottom:1px solid var(--line)}.prog.cp{color:var(--ok)}
+.divider{background:var(--accent);color:#fff;font-weight:800;border-radius:10px;padding:10px 14px;margin:18px 0 0}
+pre{white-space:pre-wrap;font-size:13px;background:#f6f8fa;border:1px solid var(--line);border-radius:10px;padding:10px;max-height:50vh;overflow:auto}
+.ph{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center}
+.cam{display:flex;align-items:center;justify-content:center;gap:6px;min-height:52px;padding:0 16px;border:2px solid var(--accent);color:var(--accent);border-radius:12px;font-weight:800;background:#fff}
+.cam input{display:none}.cam.off{opacity:.4;pointer-events:none}
+.th{position:relative;width:72px;height:72px}.th img{width:72px;height:72px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}
+.th .x{position:absolute;top:-10px;right:-10px;width:36px;height:36px;border-radius:50%;border:0;background:var(--bad);color:#fff;font-weight:800;font-size:18px}
+.viewer{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:20;display:none;align-items:center;justify-content:center;flex-direction:column}
+.viewer img{max-width:100%;max-height:80vh}.viewer button{margin-top:14px;min-height:56px;padding:0 30px;border-radius:12px;border:0;font-weight:800;font-size:18px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1b2430;color:#fff;padding:12px 18px;border-radius:12px;display:none;z-index:9}
+</style></head><body>
+<div class="bar"><h1 id="ttl">Unified Check Sheet – Trial<small>Safety &amp; Environmental Monthly Check Sheet</small></h1></div>
+<main id="app"></main><div class="toast" id="toast"></div><div class="viewer" id="viewer"><img id="vimg" alt=""><button id="vclose">Close</button></div>
+<script>
+const SECS=[{"n": 1, "t": "WALKING / WORKING CONDITIONS", "items": [{"id": "1.01", "q": "Are aisleways clear of slip / trip hazards?", "inv": false}, {"id": "1.02", "q": "Are work cells clear of slip / trip hazards?", "inv": false}, {"id": "1.03", "q": "Are power cords and air hoses routed off the floor area?", "inv": false}, {"id": "1.04", "q": "Are walking / working surfaces free of water, oil, or resin?", "inv": false}, {"id": "1.05", "q": "Are associates practicing good 5S?", "inv": false}]}, {"n": 2, "t": "ERGONOMICS", "items": [{"id": "2.01", "q": "Are reaches less than 25 inches horizontal from the body?", "inv": false}, {"id": "2.02", "q": "Are work heights correct / adjustable?", "inv": false}, {"id": "2.03", "q": "Are materials stored in designated locations and off the floor?", "inv": false}, {"id": "2.04", "q": "Is job rotation being practiced where necessary?", "inv": false}, {"id": "2.05", "q": "Are lift / tilt systems in place where necessary?", "inv": false}, {"id": "2.06", "q": "Are push / pull forces kept below 40 pounds?", "inv": false}]}, {"n": 3, "t": "PERSONAL PROTECTIVE EQUIPMENT (PPE)", "items": [{"id": "3.01", "q": "Are employees using required PPE (safety shoes, gloves)?", "inv": false}, {"id": "3.02", "q": "Are employees using box cutters and trim knives wearing Kevlar (cut-resistant) gloves?", "inv": false}, {"id": "3.03", "q": "Are all PPE requirements listed on the SOS?", "inv": false}]}, {"n": 4, "t": "MACHINE SAFETY", "items": [{"id": "4.01", "q": "Are all machine guards in place?", "inv": false}, {"id": "4.02", "q": "Are all safety light curtains and laser scanners working (tested during this audit)?", "inv": false}, {"id": "4.03", "q": "Are all pinch points guarded?", "inv": false}, {"id": "4.04", "q": "Are employees practicing lockout / tagout?", "inv": false}, {"id": "4.05", "q": "Are machines posted with lockout / tagout instructions?", "inv": false}]}, {"n": 5, "t": "FIRE PROTECTION / PREVENTION", "items": [{"id": "5.01", "q": "Are combustible items stored away from heat sources?", "inv": false}, {"id": "5.02", "q": "Are flammable liquids stored in flammable cabinets and away from heat sources?", "inv": false}, {"id": "5.03", "q": "Are flammable aerosol cans stored in flammable cabinets?", "inv": false}, {"id": "5.04", "q": "Are emergency exits and exit aisleways unobstructed?", "inv": false}, {"id": "5.05", "q": "Are fire extinguishers fully charged and unobstructed?", "inv": false}]}, {"n": 6, "t": "FIRST AID / EMERGENCY RESPONSE", "items": [{"id": "6.01", "q": "Are first aid kits in place?", "inv": false}, {"id": "6.02", "q": "Are first aid kits properly stocked?", "inv": false}, {"id": "6.03", "q": "Are first responder cabinets adequately supplied (BBP disinfectant, latex gloves, clean-up supplies)?", "inv": false}, {"id": "6.04", "q": "Are eye wash stations kept clean and free of obstruction / have they been tested?", "inv": false}]}, {"n": 7, "t": "FORKLIFT OPERATIONS", "items": [{"id": "7.01", "q": "Are forklift operators wearing seatbelts?", "inv": false}, {"id": "7.02", "q": "Are forklift operators displaying safe driving habits?", "inv": false}, {"id": "7.03", "q": "Are pallets, racks, and containers properly stacked?", "inv": false}, {"id": "7.04", "q": "Are intersection mirrors in place?", "inv": false}, {"id": "7.05", "q": "Has the forklift checklist been completed?", "inv": false}, {"id": "7.06", "q": "Are forklift battery storage areas free of leaks?", "inv": false}, {"id": "7.07", "q": "Are batteries being watered as required and is it being logged?", "inv": false}]}, {"n": 8, "t": "ENVIRONMENTAL", "items": [{"id": "8.01", "q": "Are all secondary containers properly labeled?", "inv": false}, {"id": "8.02", "q": "Are all barrels / waste drums properly labeled?", "inv": false}, {"id": "8.03", "q": "Has the spill kit tampering tape been broken / is the kit fully stocked?", "inv": true}, {"id": "8.04", "q": "Is equipment free of noticeable hydraulic leaks?", "inv": false}, {"id": "8.05", "q": "Are scrap materials (paper, plastic, cardboard, aerosol cans) being properly recycled?", "inv": false}, {"id": "8.06", "q": "Are all waste streams disposed of properly (not mixed together)?", "inv": false}, {"id": "8.07", "q": "Are used aerosol cans discarded into properly labeled containers?", "inv": false}]}, {"n": 9, "t": "CHEMICALS / HAZARDOUS WASTE", "items": [{"id": "9.01", "q": "All liquids/chemicals are properly identified.", "inv": false}, {"id": "9.02", "q": "Are all barrels grounded properly?", "inv": false}, {"id": "9.03", "q": "Are fluorescent light bulbs disposed of within a year of the accumulation start date?", "inv": false}, {"id": "9.04", "q": "Is hazardous material removed within 6 months / 180 days (SQG) or 3 months / 90 days (LQG) of the accumulation start date and documented properly?", "inv": false}, {"id": "9.05", "q": "Has any hazardous material exceeded its expiration date?", "inv": true}, {"id": "9.06", "q": "Are compressed gas, oxygen, argon and/or propane cylinders, tanks, and canisters secured and separated properly?", "inv": false}, {"id": "9.07", "q": "Are all containers closed?", "inv": false}, {"id": "9.08", "q": "Oil storage and hazardous waste building materials are properly stored and secondary containment pallets are being used.", "inv": false}]}, {"n": 10, "t": "SPILL / STORM WATER", "items": [{"id": "10.01", "q": "Diesel storage area is free of spills, leaks, or water in the secondary containment.", "inv": false}, {"id": "10.02", "q": "No spills or leaks that could impact storm water areas.", "inv": false}, {"id": "10.03", "q": "Storm drains are free of obstruction and there is no sign of contamination.", "inv": false}, {"id": "10.04", "q": "Are SPCC (Spill Prevention, Control and Countermeasure) requirements being followed?", "inv": false}]}, {"n": 11, "t": "SAFETY EQUIPMENT", "items": [{"id": "11.01", "q": "Have crane/hoist inspections been completed?", "inv": false}, {"id": "11.02", "q": "Are spray booth filters being cleaned/changed as required and are logs being filled out?", "inv": false}]}, {"n": 12, "t": "RECORDS / COMPLIANCE", "items": [{"id": "12.01", "q": "Verify Lock Out Tag Out audits are being conducted.", "inv": false}, {"id": "12.02", "q": "Is adhesive and solvent usage being properly documented (waste log)?", "inv": false}, {"id": "12.03", "q": "Have there been any equipment or process additions or changes that need to be reported to Project Integration for permitting?", "inv": true}, {"id": "12.04", "q": "Are storm water discharge reports being completed (SWPPP)?", "inv": false}, {"id": "12.05", "q": "Has the hazardous waste manifest been completed?", "inv": false}, {"id": "12.06", "q": "Have MSDS (Material Safety Data Sheet) reviews been completed?", "inv": false}, {"id": "12.07", "q": "Is the emergency call tree up to date and posted?", "inv": false}, {"id": "12.08", "q": "Are contingency drills being completed / is the schedule up to date?", "inv": false}, {"id": "12.09", "q": "Have the contingency drill forms been completed fully?", "inv": false}]}];
+const TOTAL=SECS.reduce((a,s)=>a+s.items.length,0);
+const KEY='unifiedCheckSheetTrial_v2';
+let mem=null;
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return mem||{}}}
+let S=load(); S.items=S.items||{}; S.done=S.done||null;
+function save(){S.saved=new Date().toISOString();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){mem=S}}
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const LBL={ok:'OK',bad:'Not OK',na:'N/A'};
+const $=id=>document.getElementById(id);
+const ALL=SECS.flatMap(s=>s.items);
+function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(()=>e.style.display='none',2200)}
+function cap(t){return t.toLowerCase().replace(/(^|[\s\/(])([a-z])/g,(m,a,b)=>a+b.toUpperCase()).replace(/\(Ppe\)/,'(PPE)')}
+function fmtD(d){if(!d)return'';const[a,b,c]=d.split('-');return b+'/'+c+'/'+a}
+function prog(){const n=ALL.filter(i=>S.items[i.id]&&S.items[i.id].r).length,p=$('prog');
+ p.className='prog'+(S.done?' cp':'');p.textContent=S.done?'✓ Sheet complete – '+S.done.name+', '+fmtD(S.done.date):n+' of '+TOTAL+' answered';if($('phnote'))updShare()}
+function render(){
+ let h='<div class="prog" id="prog"></div>';
+ SECS.forEach(s=>{h+=`<div class="divider">${s.n}. ${esc(cap(s.t))}</div><div class="card" style="margin-top:6px">`;
+  s.items.forEach(i=>{const v=S.items[i.id]||{};
+   h+=`<div class="item" data-i="${i.id}"><div class="q"><b>${i.id}</b> ${esc(i.q)}</div>`+
+   (i.inv?'<div class="note">Note: on the paper sheet a YES here means action is needed. Tap OK if all is fine, Not OK if action is needed.</div>':'')+
+   `<div class="seg">${['ok','bad','na'].map(k=>`<button class="${k} ${v.r==k?'on':''}" data-r="${k}">${LBL[k]}</button>`).join('')}</div>`+
+   (i.sub?`<div class="subs">${i.sub.map(x=>`<label><input type="checkbox" value="${esc(x)}" ${(v.sub||[]).includes(x)?'checked':''}>${esc(x)}</label>`).join('')}</div>`:'')+
+   `<textarea placeholder="${v.r=='bad'?'Please say what is wrong (required)':'Comment (optional)'}" class="${v.r=='bad'&&!v.c?'need':''}">${esc(v.c||'')}</textarea><div class="ph"></div></div>`});
+  h+='</div>'});
+ const d=S.done||{};
+ h+=`<div class="card"><lab>Completed by</lab><input type="text" id="cname" placeholder="Your name" value="${esc(d.name||S.name||'')}">
+ <lab>Date</lab><input type="date" id="cdate" value="${esc(d.date||S.date||today())}"><div class="msg" id="msg"></div>
+ <button class="btn go" id="done">Mark sheet complete</button></div>
+ <div class="card"><a class="btn pri" id="email" href="mailto:" style="font-size:22px;min-height:70px">✉ Email results</a><button class="btn" id="share" style="display:none">Share with photos</button><p id="phnote" style="display:none;margin:4px 2px 10px;font-size:16px">To add photos: tap <b>Download photos</b>, then attach them from Downloads in your email.</p><button class="btn" id="copy">Copy results</button><button class="btn" id="csv">Download CSV</button><button class="btn" id="view">Show results text</button><button class="btn" id="dlph">Download photos</button><div id="out"></div></div>
+ <button class="btn danger" id="reset">Start new sheet</button>`;
+ $('app').innerHTML=h;prog();ALL.forEach(i=>drawPh(i.id));
+ document.querySelectorAll('.item').forEach(el=>{const id=el.dataset.i,ta=el.querySelector('textarea');
+  el.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{const v=S.items[id]=S.items[id]||{};v.r=b.dataset.r;S.done=null;save();prog();
+   el.querySelectorAll('.seg button').forEach(x=>x.classList.toggle('on',x===b));
+   ta.placeholder=v.r=='bad'?'Please say what is wrong (required)':'Comment (optional)';ta.classList.toggle('need',v.r=='bad'&&!ta.value.trim());if(v.r=='bad'&&!ta.value.trim())ta.focus()});
+  ta.oninput=()=>{const v=S.items[id]=S.items[id]||{};v.c=ta.value;save();ta.classList.toggle('need',v.r=='bad'&&!ta.value.trim())};
+  el.querySelectorAll('.subs input').forEach(cb=>cb.onchange=()=>{const v=S.items[id]=S.items[id]||{};v.sub=[...el.querySelectorAll('.subs input:checked')].map(x=>x.value);save()})});
+ $('cname').oninput=e=>{S.name=e.target.value;save()};
+ $('cdate').oninput=e=>{S.date=e.target.value;save()};
+ $('done').onclick=()=>{const miss=ALL.filter(i=>!(S.items[i.id]&&S.items[i.id].r)),nc=ALL.filter(i=>{const v=S.items[i.id];return v&&v.r=='bad'&&!(v.c||'').trim()});
+  const name=$('cname').value.trim(),date=$('cdate').value;
+  let m=miss.length?'Please answer '+miss.length+' more item(s): '+miss.map(i=>i.id).join(', '):nc.length?'Please add a comment for Not OK: '+nc.map(i=>i.id).join(', '):!name?'Please type your name.':!date?'Please pick a date.':'';
+  $('msg').textContent=m;
+  if(m){const f=miss[0]||nc[0];if(f)document.querySelector(`.item[data-i="${f.id}"]`).scrollIntoView({behavior:'smooth',block:'center'});return}
+  S.done={name,date};S.name=name;S.date=date;save();prog();toast('Sheet marked complete')};
+ $('share').onclick=share;$('email').onclick=email;updShare();$('dlph').onclick=dlPhotos;$('copy').onclick=copy;$('csv').onclick=csv;$('view').onclick=()=>{$('out').innerHTML='<pre id="txt">'+esc(text())+'</pre>'};
+ $('reset').onclick=()=>{if(confirm('Start a new sheet? This clears ALL answers AND photos on this phone.')){S={items:{},done:null};save();clearPhotos().then(render);window.scrollTo(0,0);toast('New sheet started')}};
+}
+function text(){let t='UNIFIED CHECK SHEET – TRIAL\nSafety & Environmental Monthly Check Sheet\nExported: '+new Date().toLocaleString()+'\n';
+ SECS.forEach(s=>{t+='\n'+s.n+'. '+s.t+'\n';
+  s.items.forEach(i=>{const v=S.items[i.id]||{};t+=i.id+'  '+(v.r?LBL[v.r]:'(not answered)')+'  – '+i.q+'\n';
+   if(v.sub&&v.sub.length)t+='      Needs replacing: '+v.sub.join(', ')+'\n';if(v.c&&v.c.trim())t+='      Comment: '+v.c.trim()+'\n';const pn=phNames(i.id);if(pn.length)t+='      Photos: '+pn.join(', ')+'\n'})});
+ const a=Object.values(S.items).filter(v=>v.r);
+ t+='\nTotals: OK '+a.filter(v=>v.r=='ok').length+' | Not OK '+a.filter(v=>v.r=='bad').length+' | N/A '+a.filter(v=>v.r=='na').length+' | of '+TOTAL+' items\nPhotos attached: '+phFiles().length+'\n';
+ t+='\nCompleted by: '+(S.done?S.done.name+'   Date: '+fmtD(S.done.date):'(sheet not marked complete)')+'\n';return t}
+function canFiles(){try{return !!(window.isSecureContext&&navigator.share&&navigator.canShare&&navigator.canShare({files:[new File([new Blob(['x'],{type:'image/jpeg'})],'t.jpg',{type:'image/jpeg'})]}))}catch(e){return false}}
+function updShare(){const f=canFiles(),n=phFiles().length;$('share').style.display=f?'flex':'none';$('phnote').style.display=(!f&&n)?'block':'none'}
+function shortText(){const a=Object.values(S.items).filter(v=>v.r);let t='UNIFIED CHECK SHEET – TRIAL\nExported: '+new Date().toLocaleString()+'\n\nTotals: OK '+a.filter(v=>v.r=='ok').length+' | Not OK '+a.filter(v=>v.r=='bad').length+' | N/A '+a.filter(v=>v.r=='na').length+' | of '+TOTAL+' items\nPhotos: '+phFiles().length+'\n\nNOT OK ITEMS:\n';
+ const bad=ALL.filter(i=>(S.items[i.id]||{}).r=='bad');if(!bad.length)t+='(none)\n';
+ bad.forEach(i=>{const v=S.items[i.id];t+=i.id+' – '+i.q+'\n';if(v.sub&&v.sub.length)t+='   Needs replacing: '+v.sub.join(', ')+'\n';if(v.c&&v.c.trim())t+='   Comment: '+v.c.trim()+'\n';const pn=phNames(i.id);if(pn.length)t+='   Photos: '+pn.join(', ')+'\n'});
+ t+='\nCompleted by: '+(S.done?S.done.name+'   Date: '+fmtD(S.done.date):'(sheet not marked complete)')+'\n';return t}
+const MAXB=1700;
+function mailBody(full){if(full.length<=MAXB)return{body:full,cut:false};let b='Full results copied, long-press and Paste below.\n\n'+shortText();if(b.length>MAXB)b=b.slice(0,MAXB-20)+'\n...(see pasted text)';return{body:b,cut:true}}
+async function clip(t){try{await navigator.clipboard.writeText(t);return true}catch(e){}try{const x=document.createElement('textarea');x.value=t;x.setAttribute('readonly','');x.style.position='fixed';x.style.opacity='0';document.body.appendChild(x);x.select();const ok=document.execCommand('copy');x.remove();return ok}catch(e){return false}}
+function email(ev){ev.preventDefault();const full=text(),m=mailBody(full),who=S.done&&S.done.name?S.done.name:'not completed',dt=S.done&&S.done.date?fmtD(S.done.date):fmtD(today());
+ const nl=x=>x.replace(/\r?\n/g,'\r\n');const url='mailto:?subject='+encodeURIComponent('Unified Check Sheet – '+dt+' – '+who)+'&body='+encodeURIComponent(nl(m.body));
+ const go=()=>{window.location.href=url};if(m.cut){clip(full).then(ok=>{toast(ok?'Full results copied':'Opening email');go()})}else go()}
+async function share(){const t=text(),files=phFiles();try{await navigator.share({title:'Unified Check Sheet results',text:t,files});}catch(e){if(e.name!='AbortError')toast('Use Email results')}}
+async function copy(){const t=text();try{await navigator.clipboard.writeText(t);toast('Results copied')}catch(e){$('out').innerHTML='<pre id="txt">'+esc(t)+'</pre>';const r=document.createRange();r.selectNodeContents($('txt'));getSelection().removeAllRanges();getSelection().addRange(r);try{document.execCommand('copy');toast('Results copied')}catch(_){toast('Select the text and copy')}}}
+function csv(){const q=x=>'"'+String(x==null?'':x).replace(/"/g,'""')+'"';const d=S.done||{};let r=[['Section','Section name','Item','Check item','Result','Needs replacing','Comment','Photos','Completed by','Date']];
+ SECS.forEach(s=>s.items.forEach(i=>{const v=S.items[i.id]||{};r.push([s.n,s.t,i.id,i.q,v.r?LBL[v.r]:'',(v.sub||[]).join('; '),v.c||'',phNames(i.id).join('; '),d.name||'',d.date||''])}));
+ const b=new Blob(['\ufeff'+r.map(x=>x.map(q).join(',')).join('\r\n')],{type:'text/csv'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='Unified_Check_Sheet_'+today()+'.csv';document.body.appendChild(a);a.click();a.remove()}
+
+/* ---- photos (IndexedDB) ---- */
+let PH={};const MAXP=3;
+function db(){return new Promise((ok,no)=>{const r=indexedDB.open('ucsPhotos',1);r.onupgradeneeded=()=>r.result.createObjectStore('p',{keyPath:'k',autoIncrement:true});r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})}
+async function tx(mode,fn){const d=await db();return new Promise((ok,no)=>{const t=d.transaction('p',mode),st=t.objectStore('p');const r=fn(st);t.oncomplete=()=>ok(r&&r.result);t.onerror=()=>no(t.error)})}
+async function loadPhotos(){PH={};try{const all=await tx('readonly',st=>st.getAll());(all||[]).sort((a,b)=>a.k-b.k).forEach(p=>{(PH[p.item]=PH[p.item]||[]).push({k:p.k,blob:p.blob,url:URL.createObjectURL(p.blob)})})}catch(e){console.warn(e)}}
+function shrink(file){return new Promise((ok,no)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{const m=1280,sc=Math.min(1,m/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement('canvas');c.width=Math.round(im.naturalWidth*sc);c.height=Math.round(im.naturalHeight*sc);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>b?ok(b):no(new Error('compress failed')),'image/jpeg',0.7)};im.onerror=()=>no(new Error('not an image'));im.src=u})}
+async function addPhotos(id,files){for(const f of files){if((PH[id]||[]).length>=MAXP){toast('Max '+MAXP+' photos per item');break}
+ try{const blob=await shrink(f);const k=await tx('readwrite',st=>st.add({item:id,blob}));(PH[id]=PH[id]||[]).push({k,blob,url:URL.createObjectURL(blob)})}catch(e){toast('Could not save photo')}}
+ S.done=null;save();prog();drawPh(id)}
+async function delPhoto(id,k){if(!confirm('Remove this photo?'))return;await tx('readwrite',st=>st.delete(k));PH[id]=(PH[id]||[]).filter(p=>p.k!==k);S.done=null;save();prog();drawPh(id)}
+function phName(id,n){return id+'_'+n+'.jpg'}
+function phNames(id){return(PH[id]||[]).map((p,n)=>phName(id,n+1))}
+function phFiles(){const f=[];ALL.forEach(i=>(PH[i.id]||[]).forEach((p,n)=>f.push(new File([p.blob],phName(i.id,n+1),{type:'image/jpeg'}))));return f}
+function drawPh(id){const el=document.querySelector(`.item[data-i="${id}"] .ph`);if(!el)return;const L=PH[id]||[];
+ el.innerHTML=L.map(p=>`<div class="th"><img src="${p.url}" data-k="${p.k}" alt="photo"><button class="x" data-k="${p.k}" aria-label="Remove photo">✕</button></div>`).join('')+
+ `<label class="cam ${L.length>=MAXP?'off':''}">📷 ${L.length?'Add photo':'Photo'} (${L.length}/${MAXP})<input type="file" accept="image/*" capture="environment"></label>`;
+ el.querySelectorAll('img').forEach(im=>im.onclick=()=>{$('vimg').src=im.src;$('viewer').style.display='flex'});
+ el.querySelectorAll('.x').forEach(b=>b.onclick=()=>delPhoto(id,+b.dataset.k));
+ const inp=el.querySelector('input');inp.onchange=()=>{const fs=[...inp.files];inp.value='';if(fs.length)addPhotos(id,fs)}}
+async function clearPhotos(){try{await tx('readwrite',st=>st.clear())}catch(e){}Object.values(PH).flat().forEach(p=>URL.revokeObjectURL(p.url));PH={}}
+async function dlPhotos(){const f=phFiles();if(!f.length){toast('No photos on this sheet');return}
+ for(const x of f){const a=document.createElement('a');a.href=URL.createObjectURL(x);a.download=x.name;document.body.appendChild(a);a.click();a.remove();await new Promise(r=>setTimeout(r,400))}toast(f.length+' photo(s) downloaded')}
+$('vclose').onclick=$('viewer').onclick=()=>{$('viewer').style.display='none'};
+loadPhotos().then(render);
+</script></body></html>
