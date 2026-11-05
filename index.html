@@ -42,7 +42,8 @@ pre{white-space:pre-wrap;font-size:13px;background:#f6f8fa;border:1px solid var(
 </style></head><body>
 <div class="bar"><h1 id="ttl">Unified Check Sheet – Trial<small>Safety &amp; Environmental Monthly Check Sheet</small></h1></div>
 <main id="app"></main><div class="toast" id="toast"></div><div class="viewer" id="viewer"><img id="vimg" alt=""><button id="vclose">Close</button></div>
-<script src="xlsx.full.min.js"></script>
+<!-- ExcelJS 4.4.0 (MIT), vendored for same-origin/offline-friendly exports. -->
+<script src="exceljs.min.js"></script>
 <script>
 const SECS=[{"n": 1, "t": "WALKING / WORKING CONDITIONS", "items": [{"id": "1.01", "q": "Are aisleways clear of slip / trip hazards?", "inv": false}, {"id": "1.02", "q": "Are work cells clear of slip / trip hazards?", "inv": false}, {"id": "1.03", "q": "Are power cords and air hoses routed off the floor area?", "inv": false}, {"id": "1.04", "q": "Are walking / working surfaces free of water, oil, or resin?", "inv": false}, {"id": "1.05", "q": "Are associates practicing good 5S?", "inv": false}]}, {"n": 2, "t": "ERGONOMICS", "items": [{"id": "2.01", "q": "Are reaches less than 25 inches horizontal from the body?", "inv": false}, {"id": "2.02", "q": "Are work heights correct / adjustable?", "inv": false}, {"id": "2.03", "q": "Are materials stored in designated locations and off the floor?", "inv": false}, {"id": "2.04", "q": "Is job rotation being practiced where necessary?", "inv": false}, {"id": "2.05", "q": "Are lift / tilt systems in place where necessary?", "inv": false}, {"id": "2.06", "q": "Are push / pull forces kept below 40 pounds?", "inv": false}]}, {"n": 3, "t": "PERSONAL PROTECTIVE EQUIPMENT (PPE)", "items": [{"id": "3.01", "q": "Are employees using required PPE (safety shoes, gloves)?", "inv": false}, {"id": "3.02", "q": "Are employees using box cutters and trim knives wearing Kevlar (cut-resistant) gloves?", "inv": false}, {"id": "3.03", "q": "Are all PPE requirements listed on the SOS?", "inv": false}]}, {"n": 4, "t": "MACHINE SAFETY", "items": [{"id": "4.01", "q": "Are all machine guards in place?", "inv": false}, {"id": "4.02", "q": "Are all safety light curtains and laser scanners working (tested during this audit)?", "inv": false}, {"id": "4.03", "q": "Are all pinch points guarded?", "inv": false}, {"id": "4.04", "q": "Are employees practicing lockout / tagout?", "inv": false}, {"id": "4.05", "q": "Are machines posted with lockout / tagout instructions?", "inv": false}]}, {"n": 5, "t": "FIRE PROTECTION / PREVENTION", "items": [{"id": "5.01", "q": "Are combustible items stored away from heat sources?", "inv": false}, {"id": "5.02", "q": "Are flammable liquids stored in flammable cabinets and away from heat sources?", "inv": false}, {"id": "5.03", "q": "Are flammable aerosol cans stored in flammable cabinets?", "inv": false}, {"id": "5.04", "q": "Are emergency exits and exit aisleways unobstructed?", "inv": false}, {"id": "5.05", "q": "Are fire extinguishers fully charged and unobstructed?", "inv": false}]}, {"n": 6, "t": "FIRST AID / EMERGENCY RESPONSE", "items": [{"id": "6.01", "q": "Are first aid kits in place?", "inv": false}, {"id": "6.02", "q": "Are first aid kits properly stocked?", "inv": false}, {"id": "6.03", "q": "Are first responder cabinets adequately supplied (BBP disinfectant, latex gloves, clean-up supplies)?", "inv": false}, {"id": "6.04", "q": "Are eye wash stations kept clean and free of obstruction / have they been tested?", "inv": false}]}, {"n": 7, "t": "FORKLIFT OPERATIONS", "items": [{"id": "7.01", "q": "Are forklift operators wearing seatbelts?", "inv": false}, {"id": "7.02", "q": "Are forklift operators displaying safe driving habits?", "inv": false}, {"id": "7.03", "q": "Are pallets, racks, and containers properly stacked?", "inv": false}, {"id": "7.04", "q": "Are intersection mirrors in place?", "inv": false}, {"id": "7.05", "q": "Has the forklift checklist been completed?", "inv": false}, {"id": "7.06", "q": "Are forklift battery storage areas free of leaks?", "inv": false}, {"id": "7.07", "q": "Are batteries being watered as required and is it being logged?", "inv": false}]}, {"n": 8, "t": "ENVIRONMENTAL", "items": [{"id": "8.01", "q": "Are all secondary containers properly labeled?", "inv": false}, {"id": "8.02", "q": "Are all barrels / waste drums properly labeled?", "inv": false}, {"id": "8.03", "q": "Has the spill kit tampering tape been broken / is the kit fully stocked?", "inv": true, "sub": ["Absorbent pads", "Sorbent socks", "Pillow", "Nitrile gloves", "Emergency handbook", "Goggles", "Disposal bags"]}, {"id": "8.04", "q": "Is equipment free of noticeable hydraulic leaks?", "inv": false}, {"id": "8.05", "q": "Are scrap materials (paper, plastic, cardboard, aerosol cans) being properly recycled?", "inv": false}, {"id": "8.06", "q": "Are all waste streams disposed of properly (not mixed together)?", "inv": false}, {"id": "8.07", "q": "Are used aerosol cans discarded into properly labeled containers?", "inv": false}]}, {"n": 9, "t": "CHEMICALS / HAZARDOUS WASTE", "items": [{"id": "9.01", "q": "All liquids/chemicals are properly identified.", "inv": false}, {"id": "9.02", "q": "Are all barrels grounded properly?", "inv": false}, {"id": "9.03", "q": "Are fluorescent light bulbs disposed of within a year of the accumulation start date?", "inv": false}, {"id": "9.04", "q": "Is hazardous material removed within 6 months / 180 days (SQG) or 3 months / 90 days (LQG) of the accumulation start date and documented properly?", "inv": false}, {"id": "9.05", "q": "Has any hazardous material exceeded its expiration date?", "inv": true}, {"id": "9.06", "q": "Are compressed gas, oxygen, argon and/or propane cylinders, tanks, and canisters secured and separated properly?", "inv": false}, {"id": "9.07", "q": "Are all containers closed?", "inv": false}, {"id": "9.08", "q": "Oil storage and hazardous waste building materials are properly stored and secondary containment pallets are being used.", "inv": false}]}, {"n": 10, "t": "SPILL / STORM WATER", "items": [{"id": "10.01", "q": "Diesel storage area is free of spills, leaks, or water in the secondary containment.", "inv": false}, {"id": "10.02", "q": "No spills or leaks that could impact storm water areas.", "inv": false}, {"id": "10.03", "q": "Storm drains are free of obstruction and there is no sign of contamination.", "inv": false}, {"id": "10.04", "q": "Are SPCC (Spill Prevention, Control and Countermeasure) requirements being followed?", "inv": false}]}, {"n": 11, "t": "SAFETY EQUIPMENT", "items": [{"id": "11.01", "q": "Have crane/hoist inspections been completed?", "inv": false}, {"id": "11.02", "q": "Are spray booth filters being cleaned/changed as required and are logs being filled out?", "inv": false}]}, {"n": 12, "t": "RECORDS / COMPLIANCE", "items": [{"id": "12.01", "q": "Verify Lock Out Tag Out audits are being conducted.", "inv": false}, {"id": "12.02", "q": "Is adhesive and solvent usage being properly documented (waste log)?", "inv": false}, {"id": "12.03", "q": "Have there been any equipment or process additions or changes that need to be reported to Project Integration for permitting?", "inv": true}, {"id": "12.04", "q": "Are storm water discharge reports being completed (SWPPP)?", "inv": false}, {"id": "12.05", "q": "Has the hazardous waste manifest been completed?", "inv": false}, {"id": "12.06", "q": "Have MSDS (Material Safety Data Sheet) reviews been completed?", "inv": false}, {"id": "12.07", "q": "Is the emergency call tree up to date and posted?", "inv": false}, {"id": "12.08", "q": "Are contingency drills being completed / is the schedule up to date?", "inv": false}, {"id": "12.09", "q": "Have the contingency drill forms been completed fully?", "inv": false}]}];
 const XMAP={"items": {"1.01": 12, "1.02": 13, "1.03": 14, "1.04": 15, "1.05": 16, "2.01": 19, "2.02": 20, "2.03": 21, "2.04": 22, "2.05": 23, "2.06": 24, "3.01": 27, "3.02": 28, "3.03": 29, "4.01": 32, "4.02": 33, "4.03": 34, "4.04": 35, "4.05": 36, "5.01": 39, "5.02": 40, "5.03": 41, "5.04": 42, "5.05": 43, "6.01": 46, "6.02": 47, "6.03": 48, "6.04": 49, "7.01": 52, "7.02": 53, "7.03": 54, "7.04": 55, "7.05": 56, "7.06": 57, "7.07": 58, "8.01": 61, "8.02": 62, "8.03": 63, "8.04": 65, "8.05": 66, "8.06": 67, "8.07": 68, "9.01": 71, "9.02": 72, "9.03": 73, "9.04": 74, "9.05": 75, "9.06": 76, "9.07": 77, "9.08": 78, "10.01": 81, "10.02": 82, "10.03": 83, "10.04": 84, "11.01": 87, "11.02": 88, "12.01": 91, "12.02": 92, "12.03": 93, "12.04": 94, "12.05": 95, "12.06": 96, "12.07": 97, "12.08": 98, "12.09": 99}, "secDone": [17, 25, 30, 37, 44, 50, 59, 69, 79, 85, 89, 100], "auditDate": "D5", "auditor": "D6", "signNameRow": 105, "signDate": "C105"};
@@ -84,7 +85,7 @@ function render(){
  <button class="btn" id="csv">Download CSV</button>
  <button class="btn" id="copy">Copy results</button>
  <button class="btn" id="view">Show results text</button>
- <p id="phnote" style="margin:10px 2px 4px;font-size:15px;color:var(--muted);line-height:1.35">On this hosted link, <b>Share Excel + photos</b> can attach the filled .xlsx and all photos (Android Chrome). If Share is hidden or fails, use <b>Download filled check sheet</b> and <b>Download photos</b>, then attach them in email yourself.</p>
+ <p id="phnote" style="margin:10px 2px 4px;font-size:15px;color:var(--muted);line-height:1.35">The filled Excel includes a <b>Photos</b> sheet with photos grouped by question. <b>Share Excel + photos</b> can also attach the separate JPEGs (Android Chrome). If Share is hidden or fails, use <b>Download filled check sheet</b>; <b>Download photos</b> still saves the separate JPEGs.</p>
  <div id="out"></div></div>
  <button class="btn danger" id="reset">Start new sheet</button>`;
  $('app').innerHTML=h;prog();ALL.forEach(i=>drawPh(i.id));
@@ -130,7 +131,7 @@ async function tryShare(data){if(!shareOk(data))return 'skip';try{await navigato
 async function share(){
  if(!navigator.share){toast('Share not available – use Download filled check sheet');return}
  let xlsx=null,photos=[];
- try{toast('Building Excel…');xlsx=await makeXlsxFile()}catch(e){console.warn(e);toast(e&&/SheetJS|template|Missing/i.test(String(e.message||e))?'Could not load Excel template – check network, then use Download':'Could not build Excel – use Download filled check sheet');return}
+ try{toast('Building Excel…');xlsx=await makeXlsxFile()}catch(e){console.warn(e);toast(e&&/ExcelJS|template|Missing/i.test(String(e.message||e))?'Could not load Excel template – check network, then use Download':'Could not build Excel – use Download filled check sheet');return}
  try{photos=phFiles()}catch(e){console.warn(e);photos=[]}
  const title='Unified Check Sheet';
  const summary=shortText();
@@ -158,10 +159,87 @@ const XLSX_MIME='application/vnd.openxmlformats-officedocument.spreadsheetml.she
 const CHECK='✓';
 function xlsxFileName(){const d=(S.done&&S.done.date)||S.date||today();return 'Unified_Check_Sheet_'+d+'.xlsx'}
 function obsText(id){const v=S.items[id]||{},parts=[];if(v.sub&&v.sub.length)parts.push('Needs replacing: '+v.sub.join(', '));if(v.c&&v.c.trim())parts.push(v.c.trim());const pn=phNames(id);if(pn.length)parts.push('Photos: '+pn.join(', '));return parts.join(' | ')}
-function setCell(ws,addr,val){if(val==null||val==='')return;const s=String(val);const prev=ws[addr];if(prev){prev.v=s;prev.t='s';delete prev.w;delete prev.h;delete prev.f}else ws[addr]={t:'s',v:s}}
-async function loadTemplateBuf(){const r=await fetch('ucs_template.xlsx',{cache:'force-cache'});if(!r.ok)throw new Error('Missing ucs_template.xlsx ('+r.status+')');return await r.arrayBuffer()}
-function appendName(ws,addr,name){if(!name)return;const cur=(ws[addr]&&ws[addr].v!=null)?String(ws[addr].v):'';const base=cur.replace(/\s{2,}.*$/,'').replace(/\s*$/,'');setCell(ws,addr,base+'  '+name)}
-async function buildXlsxBlob(){if(typeof XLSX==='undefined')throw new Error('SheetJS not loaded');const buf=await loadTemplateBuf();const wb=XLSX.read(buf,{type:'array',cellFormula:true,sheetStubs:true,cellStyles:true});const sn=wb.SheetNames.find(n=>/monthly/i.test(n))||wb.SheetNames[0];const ws=wb.Sheets[sn];ALL.forEach(i=>{const row=XMAP.items[i.id];if(!row)return;const v=S.items[i.id]||{};if(v.r==='ok')setCell(ws,'C'+row,CHECK);else if(v.r==='bad')setCell(ws,'D'+row,CHECK);else if(v.r==='na')setCell(ws,'E'+row,CHECK);const obs=obsText(i.id);if(obs)setCell(ws,'F'+row,obs)});const name=((S.done&&S.done.name)||S.name||'').trim();const date=(S.done&&S.done.date)||S.date||today();const fd=fmtD(date);if(date)setCell(ws,'C5','Audit Date: '+fd);if(name)setCell(ws,'C6','Auditor: '+name);(XMAP.secDone||[]).forEach(r=>{appendName(ws,'A'+r,name);if(date)setCell(ws,'C'+r,'Date: '+fd)});if(XMAP.signNameRow)appendName(ws,'A'+XMAP.signNameRow,name);if(XMAP.signDate&&date)setCell(ws,XMAP.signDate,'Date: '+fd);const outWb={SheetNames:[sn],Sheets:{[sn]:ws}};const out=XLSX.write(outWb,{bookType:'xlsx',type:'array',cellStyles:true});return new Blob([out],{type:XLSX_MIME})}
+function setCell(ws,addr,val){if(val==null||val==='')return;ws.getCell(addr).value=String(val)}
+async function loadTemplateBuf(){const r=await fetch('ucs_template.xlsx?v=filmstrip-1',{cache:'force-cache'});if(!r.ok)throw new Error('Missing ucs_template.xlsx ('+r.status+')');return await r.arrayBuffer()}
+function appendName(ws,addr,name){if(!name)return;const cur=String(ws.getCell(addr).value||'');const base=cur.replace(/\s{2,}.*$/,'').replace(/\s*$/,'');setCell(ws,addr,base+'  '+name)}
+// Export-sized copies only: IndexedDB photos and separate JPEG downloads stay unchanged.
+async function photoForXlsx(blob){
+ const url=URL.createObjectURL(blob);
+ try{
+  const im=await new Promise((ok,no)=>{const img=new Image();img.onload=()=>ok(img);img.onerror=()=>no(new Error('Could not decode photo'));img.src=url});
+  const scale=Math.min(1,360/im.naturalWidth),width=Math.max(1,Math.round(im.naturalWidth*scale)),height=Math.max(1,Math.round(im.naturalHeight*scale));
+  const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
+  const ctx=canvas.getContext('2d');if(!ctx)throw new Error('Photo canvas unavailable');
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,width,height);ctx.drawImage(im,0,0,width,height);
+  const jpeg=await new Promise((ok,no)=>canvas.toBlob(b=>b?ok(b):no(new Error('Could not resize photo')),'image/jpeg',0.75));
+  return{buffer:await jpeg.arrayBuffer(),width,height};
+ }finally{URL.revokeObjectURL(url)}
+}
+async function addPhotoSheet(wb){
+ const ws=wb.addWorksheet('Photos');
+ ws.properties.defaultRowHeight=15; // 20px; image blocks reserve their actual height below.
+ for(let c=1;c<=12;c++)ws.getColumn(c).width=12.5;
+ ws.views=[{state:'frozen',ySplit:2,showGridLines:false}];
+ ws.pageSetup={orientation:'landscape',paperSize:9,fitToPage:true,fitToWidth:1,fitToHeight:0};
+ ws.mergeCells('A1:L1');ws.getCell('A1').value='Check sheet photos';
+ ws.getCell('A1').font={name:'Calibri',size:20,bold:true,color:{argb:'FF1F3A5A'}};ws.getRow(1).height=30;
+ ws.mergeCells('A2:L2');ws.getCell('A2').value='Photos are grouped by item ID and question. Filenames match the Monthly Check Sheet Observations.';
+ ws.getCell('A2').alignment={wrapText:true,vertical:'middle'};ws.getRow(2).height=30;
+ let row=4,hasPhotos=false;
+ for(const item of ALL){
+  const photos=[...(PH[item.id]||[])];if(!photos.length)continue;hasPhotos=true;
+  const label=item.id+' – '+item.q;
+  ws.mergeCells(row,1,row,12);const cell=ws.getCell(row,1);cell.value=label;
+  cell.font={name:'Calibri',size:12,bold:true,color:{argb:'FFFFFFFF'}};
+  cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF1F3A5A'}};
+  cell.alignment={wrapText:true,vertical:'middle'};
+  ws.getRow(row).height=Math.max(32,Math.ceil(label.length/120)*18);row++;
+  // Up to three images per strip; additional images wrap into another strip.
+  for(let offset=0;offset<photos.length;offset+=3){
+   const captionRow=row,imageRow=row+1;let height=0;
+   for(let n=offset;n<Math.min(offset+3,photos.length);n++){
+    const col=(n-offset)*4+1,name=phName(item.id,n+1);
+    ws.mergeCells(captionRow,col,captionRow,col+3);const caption=ws.getCell(captionRow,col);
+    caption.value=name;caption.font={name:'Calibri',size:11,bold:true};ws.getRow(captionRow).height=21;
+    let image;try{image=await photoForXlsx(photos[n].blob)}catch(e){throw new Error('Could not embed '+name+': '+e.message)}
+    const imageId=wb.addImage({buffer:image.buffer,extension:'jpeg'});
+    // Two-cell anchors avoid ExcelJS 4.4's invalid editAs on oneCellAnchor.
+    // Native offsets are EMUs (9525 per px); 15pt rows are exactly 20px tall.
+    const colPx=Math.floor(12.5*7+5);
+    ws.addImage(imageId,{tl:{col:col-1,row:imageRow-1},br:{
+     nativeCol:col-1+Math.floor(image.width/colPx),nativeColOff:(image.width%colPx)*9525,
+     nativeRow:imageRow-1+Math.floor(image.height/20),nativeRowOff:(image.height%20)*9525
+    },editAs:'oneCell'});
+    height=Math.max(height,image.height);
+   }
+   const imageRows=Math.ceil(height/20);
+   for(let r=imageRow;r<imageRow+imageRows;r++)ws.getRow(r).height=15;
+   row=imageRow+imageRows+1;
+  }
+ }
+ if(!hasPhotos){ws.mergeCells('A4:L4');ws.getCell('A4').value='No photos attached to this check sheet.'}
+ ws.pageSetup.printArea='A1:L'+Math.max(4,row-1);
+}
+async function buildXlsxBlob(){
+ if(typeof ExcelJS==='undefined')throw new Error('ExcelJS not loaded');
+ const wb=new ExcelJS.Workbook();await wb.xlsx.load(await loadTemplateBuf());
+ const ws=wb.worksheets.find(s=>/monthly/i.test(s.name))||wb.worksheets[0];
+ if(!ws)throw new Error('Missing Monthly Check Sheet template');
+ // Match the existing filled export: exclude the template's unrelated draft/log sheets.
+ wb.worksheets.filter(s=>s.id!==ws.id).forEach(s=>wb.removeWorksheet(s.id));
+ ALL.forEach(i=>{
+  const row=XMAP.items[i.id];if(!row)return;const v=S.items[i.id]||{};
+  if(v.r==='ok')setCell(ws,'C'+row,CHECK);else if(v.r==='bad')setCell(ws,'D'+row,CHECK);else if(v.r==='na')setCell(ws,'E'+row,CHECK);
+  const obs=obsText(i.id);if(obs){setCell(ws,'F'+row,obs);ws.getCell('F'+row).alignment={...ws.getCell('F'+row).alignment,wrapText:true}}
+ });
+ const name=((S.done&&S.done.name)||S.name||'').trim(),date=(S.done&&S.done.date)||S.date||today(),fd=fmtD(date);
+ if(date)setCell(ws,'C5','Audit Date: '+fd);if(name)setCell(ws,'C6','Auditor: '+name);
+ (XMAP.secDone||[]).forEach(r=>{appendName(ws,'A'+r,name);if(date)setCell(ws,'C'+r,'Date: '+fd)});
+ if(XMAP.signNameRow)appendName(ws,'A'+XMAP.signNameRow,name);if(XMAP.signDate&&date)setCell(ws,XMAP.signDate,'Date: '+fd);
+ wb.calcProperties.fullCalcOnLoad=true;
+ await addPhotoSheet(wb);
+ return new Blob([await wb.xlsx.writeBuffer()],{type:XLSX_MIME});
+}
 async function makeXlsxFile(){const blob=await buildXlsxBlob();const name=xlsxFileName();const typed=(blob.type===XLSX_MIME)?blob:new Blob([blob],{type:XLSX_MIME});return new File([typed],name,{type:XLSX_MIME,lastModified:Date.now()})}
 async function dlXlsx(){try{toast('Building Excel…');const blob=await buildXlsxBlob();const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=xlsxFileName();document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000);toast('Excel downloaded')}catch(e){console.warn(e);toast('Could not build Excel – check network and try again')}}
 
