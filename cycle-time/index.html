@@ -146,7 +146,7 @@ tr.sel td{background:#10293a}
 <script>
 (function(){
 'use strict';
-const KEY='cycleTimeChecker.v1', NST=6, NCY=5;
+const KEY='cycleTimeChecker.v1', NST=9, NCY=5;
 const $=id=>document.getElementById(id);
 
 // ---------- state ----------
@@ -155,8 +155,12 @@ function blank(){
 }
 let S;
 try{ S=JSON.parse(localStorage.getItem(KEY)); }catch(e){ S=null; }
-if(!S||!Array.isArray(S.stations)||S.stations.length!==NST) S=blank();
-S.stations.forEach(st=>{ if(!Array.isArray(st.at)) st.at=[null,null,null,null,null]; });
+if(!S||!Array.isArray(S.stations)||!S.stations.length) S=blank();
+// Migrate older saves (e.g. 6 stations): keep everything, append new empty stations
+while(S.stations.length<NST){ const i=S.stations.length; S.stations.push({name:'Station '+(i+1), target:null, cycles:[null,null,null,null,null], at:[null,null,null,null,null]}); }
+S.stations.forEach(st=>{ if(!Array.isArray(st.cycles)) st.cycles=[null,null,null,null,null]; if(!Array.isArray(st.at)) st.at=[null,null,null,null,null]; });
+if(typeof S.sel!=='number'||S.sel<0||S.sel>=S.stations.length) S.sel=0;
+save();
 function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){ toast('Could not save!'); } }
 const cur=()=>S.stations[S.sel];
 
@@ -320,7 +324,7 @@ $('resetSt').onclick=async()=>{
   }
 };
 $('resetAll').onclick=async()=>{
-  if(!await confirmBox('Reset ALL stations?','Clears every cycle on all 6 stations. Names and targets are kept.','Reset all')) return;
+  if(!await confirmBox('Reset ALL stations?','Clears every cycle on all stations. Names and targets are kept.','Reset all')) return;
   S.run=null; wakeOff();
   S.stations.forEach(st=>{ st.cycles=[null,null,null,null,null]; st.at=[null,null,null,null,null]; });
   save(); render(); toast('All stations reset');
@@ -381,7 +385,7 @@ render();
 if(S.run){ wakeOn(); tick(); } // resume a timing that was running before reload
 
 if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').then(r=>r.update()).catch(()=>{}));
 }
 window.__ct={state:()=>S,csv:buildCSV};
 })();
