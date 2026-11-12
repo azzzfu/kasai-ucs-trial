@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0f1720">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Cycle Time Checker</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<style>
+:root{
+  --bg:#0f1720; --panel:#17212c; --panel2:#1e2a37; --line:#2a3846;
+  --text:#e6edf3; --muted:#8b9bab; --accent:#38bdf8; --go:#16a34a; --go2:#22c55e;
+  --stop:#dc2626; --stop2:#ef4444; --warn:#f59e0b; --over:#f87171;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+body{padding:env(safe-area-inset-top) 0 calc(16px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 6px}
+header h1{font-size:18px;margin:0;font-weight:700;letter-spacing:.3px}
+header h1 span{color:var(--accent)}
+.hbtns{display:flex;gap:8px}
+button{font:inherit;color:inherit;border:0;border-radius:12px;cursor:pointer}
+.sm{background:var(--panel2);border:1px solid var(--line);padding:9px 12px;font-size:14px;font-weight:600}
+.sm:active{filter:brightness(1.3)}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:8px 14px}
+.tab{background:var(--panel);border:2px solid var(--line);padding:9px 6px;text-align:center;min-height:58px}
+.tab .n{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.tab .c{font-size:12px;color:var(--muted);margin-top:3px;display:block}
+.tab.full .c{color:var(--go2)}
+.tab.sel{border-color:var(--accent);background:#10293a}
+.tab.run{border-color:var(--go2);box-shadow:0 0 0 2px rgba(34,197,94,.25)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;margin:8px 14px;padding:14px}
+.stHead{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.stName{font-size:20px;font-weight:700;display:flex;align-items:center;gap:6px;background:none;padding:0;text-align:left}
+.stName .ed{font-size:13px;color:var(--muted);font-weight:500}
+.ind{font-size:14px;color:var(--muted);margin-top:4px}
+.ind b{color:var(--text)}
+.tgt{background:var(--panel2);border:1px solid var(--line);padding:6px 10px;font-size:12px;color:var(--muted);white-space:nowrap}
+.tgt.on{color:var(--warn);border-color:#5a4313}
+.timer{font-variant-numeric:tabular-nums;font-size:64px;font-weight:700;text-align:center;margin:14px 0 4px;letter-spacing:1px}
+.timer.running{color:var(--go2)}
+.timer.over{color:var(--over)}
+.status{text-align:center;font-size:13px;color:var(--muted);min-height:18px}
+.big{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.big button{height:96px;font-size:28px;font-weight:800;letter-spacing:1px;border-radius:18px;color:#fff;transition:transform .05s}
+.big button:active:not(:disabled){transform:scale(.97)}
+#startBtn{background:linear-gradient(180deg,var(--go2),var(--go))}
+#stopBtn{background:linear-gradient(180deg,var(--stop2),var(--stop))}
+.big button:disabled{background:#26313d!important;color:#5b6876}
+.cancel{display:block;margin:10px auto 0;background:none;color:var(--muted);font-size:14px;padding:6px 12px;text-decoration:underline}
+.cycles{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:4px}
+.cy{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:8px 2px;text-align:center;min-height:62px}
+.cy .l{font-size:11px;color:var(--muted)}
+.cy .v{font-size:15px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}
+.cy.empty .v{color:#4b5866}
+.cy.next{border-color:var(--accent);border-style:dashed}
+.cy.over{border-color:#7f1d1d;background:#2a1618}.cy.over .v{color:var(--over)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.stat{text-align:center;background:var(--bg);border-radius:10px;padding:8px 2px}
+.stat .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.stat .v{font-size:18px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+.stat .v.over{color:var(--over)}
+.secTitle{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin:0 0 8px;display:flex;justify-content:space-between}
+.hint{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
+.row{display:flex;gap:8px;margin-top:12px}
+.row button{flex:1}
+.danger{color:#fca5a5;border-color:#5b2323!important}
+table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{padding:7px 3px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase}
+td.over{color:var(--over)}
+tr.sel td{background:#10293a}
+.modalBg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:50}
+.modalBg.show{display:flex}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:20px 20px 0 0;width:100%;max-width:520px;padding:20px 16px calc(20px + env(safe-area-inset-bottom))}
+.modal h3{margin:0 0 6px;font-size:18px}
+.modal p{margin:0 0 14px;color:var(--muted);font-size:14px;line-height:1.4}
+.modal input{width:100%;font:inherit;font-size:18px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);margin-bottom:14px;-webkit-user-select:text;user-select:text}
+.mbtns{display:flex;flex-direction:column;gap:8px}
+.mbtns button{padding:15px;font-size:16px;font-weight:700;background:var(--panel2);border:1px solid var(--line)}
+.mbtns button.pri{background:var(--accent);color:#04121c;border:0}
+.mbtns button.red{background:var(--stop);color:#fff;border:0}
+.toast{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top));transform:translateX(-50%);background:#0b1118;border:1px solid var(--line);padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:60;white-space:nowrap}
+.toast.show{opacity:1}
+.foot{font-size:11px;color:#5b6876;text-align:center;margin-top:10px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Cycle Time <span>Checker</span></h1>
+  <div class="hbtns">
+    <button class="sm" id="exportBtn">CSV</button>
+    <button class="sm" id="shareBtn">Share</button>
+  </div>
+</header>
+
+<div class="tabs" id="tabs"></div>
+
+<section class="card" id="main">
+  <div class="stHead">
+    <div>
+      <button class="stName" id="stName"><span id="stNameTxt">Station 1</span><span class="ed">✎</span></button>
+      <div class="ind" id="ind"></div>
+    </div>
+    <button class="tgt" id="tgtBtn">Target: off</button>
+  </div>
+  <div class="timer" id="timer">0:00.0</div>
+  <div class="status" id="status">Ready</div>
+  <div class="big">
+    <button id="startBtn">START</button>
+    <button id="stopBtn" disabled>STOP</button>
+  </div>
+  <button class="cancel" id="cancelBtn" style="display:none">Cancel this timing (don't record)</button>
+</section>
+
+<section class="card">
+  <div class="secTitle"><span>Cycles</span><span id="cntTxt">0 / 5</span></div>
+  <div class="cycles" id="cycles"></div>
+  <div class="stats">
+    <div class="stat"><div class="l">Average</div><div class="v" id="avg">–</div></div>
+    <div class="stat"><div class="l">Min</div><div class="v" id="min">–</div></div>
+    <div class="stat"><div class="l">Max</div><div class="v" id="max">–</div></div>
+  </div>
+  <div class="hint">Tap a recorded cycle to clear and redo it.</div>
+  <div class="row">
+    <button class="sm danger" id="resetSt">Reset station</button>
+    <button class="sm danger" id="resetAll">Reset all</button>
+  </div>
+</section>
+
+<section class="card">
+  <div class="secTitle"><span>All stations</span><span>seconds</span></div>
+  <table>
+    <thead><tr><th>Station</th><th>n</th><th>Avg</th><th>Min</th><th>Max</th><th>Tgt</th></tr></thead>
+    <tbody id="sumBody"></tbody>
+  </table>
+  <div class="foot">Saved on this phone automatically · works offline</div>
+</section>
+
+<div class="modalBg" id="modalBg"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+const KEY='cycleTimeChecker.v1', NST=6, NCY=5;
+const $=id=>document.getElementById(id);
+
+// ---------- state ----------
+function blank(){
+  return {sel:0, run:null, stations:Array.from({length:NST},(_,i)=>({name:'Station '+(i+1), target:null, cycles:[null,null,null,null,null], at:[null,null,null,null,null]}))};
+}
+let S;
+try{ S=JSON.parse(localStorage.getItem(KEY)); }catch(e){ S=null; }
+if(!S||!Array.isArray(S.stations)||S.stations.length!==NST) S=blank();
+S.stations.forEach(st=>{ if(!Array.isArray(st.at)) st.at=[null,null,null,null,null]; });
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){ toast('Could not save!'); } }
+const cur=()=>S.stations[S.sel];
+
+// ---------- formatting ----------
+function fmt(sec){ // m:ss.t
+  if(sec==null||isNaN(sec)) return '–';
+  const t=Math.round(sec*10)/10, m=Math.floor(t/60), s=t-m*60;
+  return m+':'+(s<10?'0':'')+s.toFixed(1);
+}
+const f1=x=>x==null?'':(Math.round(x*10)/10).toFixed(1);
+function stats(st){
+  const v=st.cycles.filter(x=>x!=null);
+  if(!v.length) return {n:0,avg:null,min:null,max:null};
+  return {n:v.length, avg:v.reduce((a,b)=>a+b,0)/v.length, min:Math.min(...v), max:Math.max(...v)};
+}
+const nextSlot=st=>st.cycles.findIndex(x=>x==null);
+const isOver=(st,v)=>st.target!=null&&v!=null&&v>st.target;
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+// ---------- UI helpers ----------
+let toastT;
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),1800); }
+function modal({title,text,input,buttons}){
+  return new Promise(res=>{
+    const m=$('modal');
+    m.innerHTML='<h3>'+esc(title)+'</h3>'+(text?'<p>'+esc(text)+'</p>':'')+(input?'<input id="mIn" '+(input.type?'type="'+input.type+'" inputmode="decimal" step="0.1"':'')+' placeholder="'+esc(input.placeholder||'')+'" value="'+esc(input.value??'')+'">':'')+
+      '<div class="mbtns">'+buttons.map((b,i)=>'<button data-i="'+i+'" class="'+(b.cls||'')+'">'+esc(b.label)+'</button>').join('')+'</div>';
+    $('modalBg').classList.add('show');
+    const inp=$('mIn'); if(inp){ setTimeout(()=>{inp.focus();inp.select();},50); }
+    m.querySelectorAll('button').forEach(btn=>btn.onclick=()=>{
+      const b=buttons[+btn.dataset.i]; const val=inp?inp.value:undefined;
+      $('modalBg').classList.remove('show'); res({value:b.value, input:val});
+    });
+  });
+}
+async function confirmBox(title,text,okLabel){
+  const r=await modal({title,text,buttons:[{label:okLabel||'Yes',value:true,cls:'red'},{label:'Cancel',value:false}]});
+  return r.value===true;
+}
+// Block accidental double taps on critical buttons
+let lastTap=0;
+function guard(fn){ return e=>{ const now=Date.now(); if(now-lastTap<450){ e&&e.preventDefault(); return; } lastTap=now; fn(e); }; }
+
+// ---------- wake lock ----------
+let wl=null;
+async function wakeOn(){ try{ if('wakeLock' in navigator&&!wl){ wl=await navigator.wakeLock.request('screen'); wl.addEventListener('release',()=>{wl=null;}); } }catch(e){} }
+function wakeOff(){ try{ wl&&wl.release(); }catch(e){} wl=null; }
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'&&S.run) wakeOn(); });
+
+// ---------- timing ----------
+let raf=null;
+function elapsed(){ return S.run?(Date.now()-S.run.start)/1000:0; }
+function tick(){
+  const el=$('timer');
+  if(S.run){
+    const e=elapsed(), st=S.stations[S.run.st];
+    el.textContent=fmt(e);
+    el.className='timer running'+(isOver(st,e)?' over':'');
+    raf=requestAnimationFrame(tick);
+  }
+}
+async function start(){
+  if(S.run) return;
+  const st=cur();
+  let slot=nextSlot(st);
+  if(slot<0){
+    const nxt=findNextOpen();
+    const btns=[];
+    if(nxt>=0) btns.push({label:'Go to '+S.stations[nxt].name+' (next open)',value:'next',cls:'pri'});
+    btns.push({label:'Reset '+st.name+' and start over',value:'reset',cls:'red'});
+    btns.push({label:'Cancel',value:null});
+    const r=await modal({title:st.name+' is full',text:'All 5 cycles are recorded. Nothing will be overwritten.',buttons:btns});
+    if(r.value==='next'){ S.sel=nxt; save(); render(); toast('Now on '+S.stations[nxt].name+' — press START'); }
+    else if(r.value==='reset'){ st.cycles=[null,null,null,null,null]; st.at=[null,null,null,null,null]; save(); render(); toast(st.name+' reset'); }
+    return;
+  }
+  S.run={st:S.sel, start:Date.now()};
+  save(); wakeOn(); render(); tick();
+}
+function stop(){
+  if(!S.run) return;
+  const e=elapsed(), st=S.stations[S.run.st];
+  let slot=nextSlot(st);
+  if(slot<0){ S.run=null; save(); wakeOff(); render(); toast('Station full – not recorded'); return; }
+  st.cycles[slot]=Math.round(e*10)/10; st.at[slot]=new Date().toISOString();
+  S.run=null; save(); wakeOff(); cancelAnimationFrame(raf);
+  render();
+  const left=NCY-stats(st).n;
+  toast('Cycle '+(slot+1)+' = '+fmt(st.cycles[slot])+(left?'':' · station complete'));
+}
+async function cancelRun(){
+  if(!S.run) return;
+  if(await confirmBox('Cancel timing?','The running time will not be recorded.','Discard')){ S.run=null; save(); wakeOff(); render(); }
+}
+function findNextOpen(){
+  for(let k=1;k<=NST;k++){ const i=(S.sel+k)%NST; if(nextSlot(S.stations[i])>=0) return i; }
+  return -1;
+}
+
+// ---------- render ----------
+function render(){
+  // tabs
+  $('tabs').innerHTML=S.stations.map((st,i)=>{
+    const n=stats(st).n;
+    return '<button class="tab'+(i===S.sel?' sel':'')+(n===NCY?' full':'')+(S.run&&S.run.st===i?' run':'')+'" data-i="'+i+'"><span class="n">'+esc(st.name)+'</span><span class="c">'+(S.run&&S.run.st===i?'● timing':(n===NCY?'✓ 5 / 5':n+' / 5'))+'</span></button>';
+  }).join('');
+  $('tabs').querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.i;
+    if(S.run&&S.run.st!==i){ toast('Stop or cancel the running cycle first'); return; }
+    S.sel=i; save(); render();
+  });
+  const st=cur(), s=stats(st), slot=nextSlot(st);
+  $('stNameTxt').textContent=st.name;
+  $('ind').innerHTML=slot<0?'<b>All 5 cycles done</b>':'Next: <b>Cycle '+(slot+1)+' of 5</b>';
+  $('tgtBtn').textContent=st.target!=null?'Target: '+f1(st.target)+'s':'Target: off';
+  $('tgtBtn').classList.toggle('on',st.target!=null);
+  const running=!!S.run;
+  $('startBtn').disabled=running;
+  $('stopBtn').disabled=!running;
+  $('cancelBtn').style.display=running?'block':'none';
+  $('status').textContent=running?('Timing '+st.name+' · cycle '+(slot+1)):(slot<0?'Station complete – pick another or reset':'Ready – press START');
+  if(!running){ $('timer').className='timer'; const last=s.n?st.cycles[[...st.cycles.keys()].filter(i=>st.cycles[i]!=null).pop()]:null; $('timer').textContent=fmt(last??0); }
+  // cycles
+  $('cycles').innerHTML=st.cycles.map((v,i)=>'<div class="cy'+(v==null?' empty':'')+(i===slot?' next':'')+(isOver(st,v)?' over':'')+'" data-i="'+i+'"><div class="l">C'+(i+1)+'</div><div class="v">'+(v==null?'—':fmt(v))+'</div></div>').join('');
+  $('cycles').querySelectorAll('.cy').forEach(c=>c.onclick=async()=>{
+    const i=+c.dataset.i; if(st.cycles[i]==null) return;
+    if(S.run){ toast('Stop the running cycle first'); return; }
+    if(await confirmBox('Clear cycle '+(i+1)+'?',st.name+': '+fmt(st.cycles[i])+'. It will be the next cycle recorded.','Clear cycle')){
+      st.cycles[i]=null; st.at[i]=null; save(); render(); toast('Cycle '+(i+1)+' cleared');
+    }
+  });
+  $('cntTxt').textContent=s.n+' / 5';
+  $('avg').textContent=fmt(s.avg); $('min').textContent=fmt(s.min); $('max').textContent=fmt(s.max);
+  $('avg').className='v'+(isOver(st,s.avg)?' over':''); $('max').className='v'+(isOver(st,s.max)?' over':''); $('min').className='v'+(isOver(st,s.min)?' over':'');
+  // summary
+  $('sumBody').innerHTML=S.stations.map((x,i)=>{ const t=stats(x);
+    return '<tr class="'+(i===S.sel?'sel':'')+'"><td>'+esc(x.name)+'</td><td>'+t.n+'</td><td class="'+(isOver(x,t.avg)?'over':'')+'">'+f1(t.avg)+'</td><td>'+f1(t.min)+'</td><td class="'+(isOver(x,t.max)?'over':'')+'">'+f1(t.max)+'</td><td>'+(x.target!=null?f1(x.target):'')+'</td></tr>'; }).join('');
+}
+
+// ---------- edit name / target ----------
+$('stName').onclick=async()=>{
+  const st=cur();
+  const r=await modal({title:'Station name',input:{value:st.name,placeholder:'Station '+(S.sel+1)},buttons:[{label:'Save',value:true,cls:'pri'},{label:'Cancel',value:false}]});
+  if(r.value){ st.name=(r.input||'').trim().slice(0,30)||('Station '+(S.sel+1)); save(); render(); }
+};
+$('tgtBtn').onclick=async()=>{
+  const st=cur();
+  const r=await modal({title:'Target cycle time (optional)',text:'Seconds. Cycles over target show in red. Leave blank to turn off.',input:{type:'number',value:st.target??'',placeholder:'e.g. 45.0'},buttons:[{label:'Save',value:true,cls:'pri'},{label:'Turn off',value:'off'},{label:'Cancel',value:false}]});
+  if(r.value==='off'){ st.target=null; }
+  else if(r.value){ const v=parseFloat(String(r.input).replace(',','.')); st.target=(isFinite(v)&&v>0)?Math.round(v*10)/10:null; }
+  else return;
+  save(); render();
+};
+
+// ---------- resets ----------
+$('resetSt').onclick=async()=>{
+  if(S.run){ toast('Stop the running cycle first'); return; }
+  const st=cur();
+  if(await confirmBox('Reset '+st.name+'?','Clears all 5 cycles for this station. Name and target are kept.','Reset station')){
+    st.cycles=[null,null,null,null,null]; st.at=[null,null,null,null,null]; save(); render(); toast(st.name+' reset');
+  }
+};
+$('resetAll').onclick=async()=>{
+  if(!await confirmBox('Reset ALL stations?','Clears every cycle on all 6 stations. Names and targets are kept.','Reset all')) return;
+  S.run=null; wakeOff();
+  S.stations.forEach(st=>{ st.cycles=[null,null,null,null,null]; st.at=[null,null,null,null,null]; });
+  save(); render(); toast('All stations reset');
+};
+
+// ---------- export ----------
+function csvCell(v){ v=v==null?'':String(v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }
+function pad(n){return (n<10?'0':'')+n;}
+function stamp(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes()); }
+function buildCSV(){
+  const now=new Date();
+  const rows=[['Exported','Station','Target (s)','Cycle 1 (s)','Cycle 2 (s)','Cycle 3 (s)','Cycle 4 (s)','Cycle 5 (s)','Avg (s)','Min (s)','Max (s)','Cycles','Over target','First cycle at','Last cycle at']];
+  S.stations.forEach(st=>{
+    const s=stats(st);
+    const times=st.at.filter(Boolean).sort();
+    const over=st.target!=null?st.cycles.filter(v=>isOver(st,v)).length:'';
+    rows.push([stamp(now),st.name,st.target!=null?f1(st.target):'',...st.cycles.map(f1),f1(s.avg),f1(s.min),f1(s.max),s.n,over,
+      times.length?stamp(new Date(times[0])):'',times.length?stamp(new Date(times[times.length-1])):'']);
+  });
+  return rows.map(r=>r.map(csvCell).join(',')).join('\r\n')+'\r\n';
+}
+function fileName(){ const d=new Date(); return 'CycleTimes_'+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'_'+pad(d.getHours())+pad(d.getMinutes())+'.csv'; }
+function download(csv,name){
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name;
+  document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},1000);
+  toast('CSV saved to Downloads');
+}
+function textSummary(){
+  const lines=['Cycle Time Check – '+stamp(new Date())];
+  S.stations.forEach(st=>{ const s=stats(st); if(!s.n) return;
+    lines.push(st.name+': '+st.cycles.map(v=>v==null?'-':f1(v)).join(' / ')+' | avg '+f1(s.avg)+' min '+f1(s.min)+' max '+f1(s.max)+(st.target!=null?' | tgt '+f1(st.target):'')); });
+  if(lines.length===1) lines.push('(no cycles recorded)');
+  return lines.join('\n');
+}
+$('exportBtn').onclick=guard(()=>download(buildCSV(),fileName()));
+$('shareBtn').onclick=guard(async()=>{
+  const csv=buildCSV(), name=fileName();
+  try{
+    if(navigator.share){
+      const file=new File(['\ufeff'+csv],name,{type:'text/csv'});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){
+        await navigator.share({files:[file],title:'Cycle times',text:textSummary()}); return;
+      }
+      await navigator.share({title:'Cycle times',text:textSummary()}); return;
+    }
+  }catch(e){ if(e&&e.name==='AbortError') return; }
+  download(csv,name);
+});
+
+// ---------- wire up ----------
+$('startBtn').addEventListener('click',guard(start));
+$('stopBtn').addEventListener('click',guard(stop));
+$('cancelBtn').addEventListener('click',cancelRun);
+document.addEventListener('dblclick',e=>e.preventDefault());
+
+render();
+if(S.run){ wakeOn(); tick(); } // resume a timing that was running before reload
+
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+window.__ct={state:()=>S,csv:buildCSV};
+})();
+</script>
+</body>
+</html>
