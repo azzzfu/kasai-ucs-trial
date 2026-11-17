@@ -117,7 +117,7 @@ tr.sel td{background:#10293a}
 </section>
 
 <section class="card">
-  <div class="secTitle"><span>Cycles</span><span id="cntTxt">0 / 5</span></div>
+  <div class="secTitle"><span>Cycles</span><span id="cntTxt">0 / 10</span></div>
   <div class="cycles" id="cycles"></div>
   <div class="stats">
     <div class="stat"><div class="l">Average</div><div class="v" id="avg">–</div></div>
@@ -146,19 +146,20 @@ tr.sel td{background:#10293a}
 <script>
 (function(){
 'use strict';
-const KEY='cycleTimeChecker.v1', NST=9, NCY=5;
+const KEY='cycleTimeChecker.v1', NST=9, NCY=10;
+const E=()=>Array(NCY).fill(null);
 const $=id=>document.getElementById(id);
 
 // ---------- state ----------
 function blank(){
-  return {sel:0, run:null, stations:Array.from({length:NST},(_,i)=>({name:'Station '+(i+1), target:null, cycles:[null,null,null,null,null], at:[null,null,null,null,null]}))};
+  return {sel:0, run:null, stations:Array.from({length:NST},(_,i)=>({name:'Station '+(i+1), target:null, cycles:E(), at:E()}))};
 }
 let S;
 try{ S=JSON.parse(localStorage.getItem(KEY)); }catch(e){ S=null; }
 if(!S||!Array.isArray(S.stations)||!S.stations.length) S=blank();
 // Migrate older saves (e.g. 6 stations): keep everything, append new empty stations
-while(S.stations.length<NST){ const i=S.stations.length; S.stations.push({name:'Station '+(i+1), target:null, cycles:[null,null,null,null,null], at:[null,null,null,null,null]}); }
-S.stations.forEach(st=>{ if(!Array.isArray(st.cycles)) st.cycles=[null,null,null,null,null]; if(!Array.isArray(st.at)) st.at=[null,null,null,null,null]; });
+while(S.stations.length<NST){ const i=S.stations.length; S.stations.push({name:'Station '+(i+1), target:null, cycles:E(), at:E()}); }
+S.stations.forEach(st=>{ if(!Array.isArray(st.cycles)) st.cycles=E(); if(!Array.isArray(st.at)) st.at=E(); while(st.cycles.length<NCY) st.cycles.push(null); while(st.at.length<NCY) st.at.push(null); });
 if(typeof S.sel!=='number'||S.sel<0||S.sel>=S.stations.length) S.sel=0;
 save();
 function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){ toast('Could not save!'); } }
@@ -232,9 +233,9 @@ async function start(){
     if(nxt>=0) btns.push({label:'Go to '+S.stations[nxt].name+' (next open)',value:'next',cls:'pri'});
     btns.push({label:'Reset '+st.name+' and start over',value:'reset',cls:'red'});
     btns.push({label:'Cancel',value:null});
-    const r=await modal({title:st.name+' is full',text:'All 5 cycles are recorded. Nothing will be overwritten.',buttons:btns});
+    const r=await modal({title:st.name+' is full',text:'All '+NCY+' cycles are recorded. Nothing will be overwritten.',buttons:btns});
     if(r.value==='next'){ S.sel=nxt; save(); render(); toast('Now on '+S.stations[nxt].name+' — press START'); }
-    else if(r.value==='reset'){ st.cycles=[null,null,null,null,null]; st.at=[null,null,null,null,null]; save(); render(); toast(st.name+' reset'); }
+    else if(r.value==='reset'){ st.cycles=E(); st.at=E(); save(); render(); toast(st.name+' reset'); }
     return;
   }
   S.run={st:S.sel, start:Date.now()};
@@ -265,7 +266,7 @@ function render(){
   // tabs
   $('tabs').innerHTML=S.stations.map((st,i)=>{
     const n=stats(st).n;
-    return '<button class="tab'+(i===S.sel?' sel':'')+(n===NCY?' full':'')+(S.run&&S.run.st===i?' run':'')+'" data-i="'+i+'"><span class="n">'+esc(st.name)+'</span><span class="c">'+(S.run&&S.run.st===i?'● timing':(n===NCY?'✓ 5 / 5':n+' / 5'))+'</span></button>';
+    return '<button class="tab'+(i===S.sel?' sel':'')+(n===NCY?' full':'')+(S.run&&S.run.st===i?' run':'')+'" data-i="'+i+'"><span class="n">'+esc(st.name)+'</span><span class="c">'+(S.run&&S.run.st===i?'● timing':(n===NCY?'✓ '+NCY+' / '+NCY:n+' / '+NCY))+'</span></button>';
   }).join('');
   $('tabs').querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
     const i=+b.dataset.i;
@@ -274,7 +275,7 @@ function render(){
   });
   const st=cur(), s=stats(st), slot=nextSlot(st);
   $('stNameTxt').textContent=st.name;
-  $('ind').innerHTML=slot<0?'<b>All 5 cycles done</b>':'Next: <b>Cycle '+(slot+1)+' of 5</b>';
+  $('ind').innerHTML=slot<0?'<b>All '+NCY+' cycles done</b>':'Next: <b>Cycle '+(slot+1)+' of '+NCY+'</b>';
   $('tgtBtn').textContent=st.target!=null?'Target: '+f1(st.target)+'s':'Target: off';
   $('tgtBtn').classList.toggle('on',st.target!=null);
   const running=!!S.run;
@@ -292,7 +293,7 @@ function render(){
       st.cycles[i]=null; st.at[i]=null; save(); render(); toast('Cycle '+(i+1)+' cleared');
     }
   });
-  $('cntTxt').textContent=s.n+' / 5';
+  $('cntTxt').textContent=s.n+' / '+NCY;
   $('avg').textContent=fmt(s.avg); $('min').textContent=fmt(s.min); $('max').textContent=fmt(s.max);
   $('avg').className='v'+(isOver(st,s.avg)?' over':''); $('max').className='v'+(isOver(st,s.max)?' over':''); $('min').className='v'+(isOver(st,s.min)?' over':'');
   // summary
@@ -319,14 +320,14 @@ $('tgtBtn').onclick=async()=>{
 $('resetSt').onclick=async()=>{
   if(S.run){ toast('Stop the running cycle first'); return; }
   const st=cur();
-  if(await confirmBox('Reset '+st.name+'?','Clears all 5 cycles for this station. Name and target are kept.','Reset station')){
-    st.cycles=[null,null,null,null,null]; st.at=[null,null,null,null,null]; save(); render(); toast(st.name+' reset');
+  if(await confirmBox('Reset '+st.name+'?','Clears all '+NCY+' cycles for this station. Name and target are kept.','Reset station')){
+    st.cycles=E(); st.at=E(); save(); render(); toast(st.name+' reset');
   }
 };
 $('resetAll').onclick=async()=>{
   if(!await confirmBox('Reset ALL stations?','Clears every cycle on all stations. Names and targets are kept.','Reset all')) return;
   S.run=null; wakeOff();
-  S.stations.forEach(st=>{ st.cycles=[null,null,null,null,null]; st.at=[null,null,null,null,null]; });
+  S.stations.forEach(st=>{ st.cycles=E(); st.at=E(); });
   save(); render(); toast('All stations reset');
 };
 
@@ -336,7 +337,7 @@ function pad(n){return (n<10?'0':'')+n;}
 function stamp(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes()); }
 function buildCSV(){
   const now=new Date();
-  const rows=[['Exported','Station','Target (s)','Cycle 1 (s)','Cycle 2 (s)','Cycle 3 (s)','Cycle 4 (s)','Cycle 5 (s)','Avg (s)','Min (s)','Max (s)','Cycles','Over target','First cycle at','Last cycle at']];
+  const rows=[['Exported','Station','Target (s)',...Array.from({length:NCY},(_,i)=>'Cycle '+(i+1)+' (s)'),'Avg (s)','Min (s)','Max (s)','Cycles','Over target','First cycle at','Last cycle at']];
   S.stations.forEach(st=>{
     const s=stats(st);
     const times=st.at.filter(Boolean).sort();
